@@ -1,0 +1,156 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<div class="content">
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">@ViewBag.Title</h1>
+
+        <!-- Start Page Header Right Div -->
+        <div class="right">
+            <div class="btn-group" role="group" aria-label="...">
+                <a href="javascript:location.reload()" class="btn btn-light"><i class="fa fa-refresh"></i></a>
+            </div>
+        </div>
+        <!-- End Page Header Right Div -->
+
+    </div>
+    <!-- End Page Header -->
+
+    <div class="container-widget">
+
+        <!-- Start Row -->
+        <div class="row">
+
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+
+                    <div class="panel-body table-responsive">
+
+                        <table id="example0" class="table display table-hover">
+                            <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>手机</th>
+                                <th>编辑</th>
+
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            @if (ViewBag.list != null)
+                            {
+                                foreach (var list in ViewBag.list)
+                                {
+                                    <tr id="@list.userId">
+                                        <td> @list.userName</td>
+                                        <td>@list.userPhone</td>
+                                        <td>
+                                            <a class="btnEdit" href="#" data-id="@list.userId" data-name="@list.userName" data-mobile="@list.userPhone">编辑</a>
+                                            &nbsp;&nbsp;<a href="#" name="@list.userId" class="del"><span style="color:red">删除</span></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-center">
+                    @Html.PagedListPager((IPagedList)Model, page => Url.Action("UserList", new { page }))
+                </div>
+            </div>
+            <!-- End Panel -->
+
+
+        </div>
+        <!-- End Row -->
+
+    </div>
+    <!-- END 内容部分  -->
+
+</div>
+
+
+<script>
+    //删除
+    $(".del").click(function () {
+        if (!confirm("确认删除吗？")) return;
+        var ID = $(this).attr("name");
+        $.post("/UserInfo/Del/", { id: ID }, function (data, status) {
+            $("#" + ID).remove();
+            //$(success("删除成功！"));
+        });
+    });
+
+    //编辑传值
+    $(".btnEdit").click(function () {
+        $("#userId").val($(this).data('id'));
+        $("#userName").val($(this).data('name'));
+        $("#userMobile").val($(this).data('mobile'));
+        $("#edEdit").modal({ show: true });
+    });
+    //编辑提交
+    $(function () {
+        $("#btn-edit-submit").click(function () {
+            //密码确认
+            var pwd = $("#adminPwd").val();
+            var pwdc = $("#adminPwdC").val();
+            if (pwd == pwdc) {
+                $("#edEdit").modal().hide();
+                success("编辑成功！");
+                setTimeout(function () { $("#form_edit").submit(); }, 1600);
+
+            } else {
+                warning("两次密码不一致");
+            }
+        });
+    });
+
+    //添加提交
+   
+</script>
+<!--start Modal 编辑-->
+@*<a href="#" data-toggle="modal" data-target="#edEdit" data-id="1" data-name="name1">编辑</a>*@
+<div class="modal fade" id="edEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel" style="color: #0072bc">  <i class="fa fa-pencil-square-o"></i>&nbsp;编辑内容</h4>
+            </div>
+            <div class="modal-body" style="text-align: left;">
+
+                <form id="form_edit" action="/UserInfo/GetEdit" class="form-horizontal" method="post">
+                    <input type="text" name="userId" id="userId" class="form-control" style="display: none">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">昵称</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="userName" id="userName" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">手机</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="userMobile" id="userMobile" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="btn btn-default" id="btn-edit-submit">提交</div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--end Modal 编辑 -->
+

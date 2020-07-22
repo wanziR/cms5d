@@ -1,0 +1,119 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="" />
+    <title>@ViewBag.Title-后台管理</title>
+    <link href="/Content/root.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="/Scripts/jquery.form.js"></script><!--图片上传Ajax-->
+
+</head>
+<body>
+    <!-- Start Page Loading -->
+    <div class="loading"><img src="/images/admin/loading.gif" alt="loading-img"></div>
+    <!-- End Page Loading -->
+    <!-- //////////////////////////////////////////////////////////////////////////// -->
+    <!-- START TOP -->
+    <div id="top" class="clearfix">
+
+        <!-- Start App Logo -->
+        <div class="applogo">
+            <a href="#" class="logo">后台管理系统</a>
+        </div>
+        <!-- End App Logo -->
+        <!-- Start 侧边栏显示隐藏按钮 -->
+        <a href="#" class="sidebar-open-button"><i class="fa fa-bars"></i></a>
+        <a href="#" class="sidebar-open-button-mobile"><i class="fa fa-bars"></i></a>
+        <!-- End 侧边栏显示隐藏按钮 --
+
+
+        <!-- Start 搜索框 -->
+        <form class="searchform">
+            <input type="text" class="searchbox" id="searchbox" placeholder="搜索">
+            <span class="searchbutton"><i class="fa fa-search"></i></span>
+        </form>
+        <!-- End 搜索框 -->
+        <!-- Start Top Right -->
+        <ul class="top-right">
+
+            <li class="dropdown link">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox"><img src="/images/logom.png" alt="img"><b>@Session["AdminName"] </b><span class="caret"></span></a>
+                <ul class="dropdown-menu dropdown-menu-list dropdown-menu-right">
+                    <li role="presentation" class="dropdown-header">个人中心</li>
+                    <li><a href="#"><i class="fa falist fa-inbox"></i>消息<span class="badge label-danger">4</span></a></li>
+                    <li class="divider"></li>
+                    <li><a href="#"><i class="fa falist fa-lock"></i> 密码</a></li>
+                    <li><a href="/Admin/Exit"><i class="fa falist fa-power-off"></i> 退出</a></li>
+                </ul>
+            </li>
+
+        </ul>
+        <!-- End Top Right -->
+
+    </div>
+    <!-- END TOP -->
+    <!-- START 左侧菜单 -->
+    @Html.Partial("~/Views/Shared/_AdminLeft.cshtml")
+    <!-- END 左侧菜单 -->
+    <!-- START 内容部分 -->
+    @RenderBody()
+    <!-- END 内容部分  -->
+    <!-- Start Footer -->
+    <div class="row footer" style="text-align: right;padding-right: 50px">
+       五点网络科技
+    </div>
+    <!-- End Footer -->
+    <!-- ========== Js 文件 ==========-->
+
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- 下拉框 -->
+    <script type="text/javascript" src="/Scripts/admin/bootstrap-select/bootstrap-select.js"></script>
+    <!-- 切换按钮 -->
+    <script type="text/javascript" src="/Scripts/admin/bootstrap-toggle/bootstrap-toggle.min.js"></script>
+    <!--  -->
+    <script type="text/javascript" src="/Scripts/admin/plugins.js"></script>
+    <!--日历 Moment.js-->
+    <script type="text/javascript" src="/Scripts/admin/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/Scripts/admin/date-range-picker/daterangepicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#date-range-picker').daterangepicker(null, function (start, end, label) {
+                console.log(start.toISOString(), end.toISOString(), label);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#date-picker').daterangepicker({
+                singleDatePicker: true
+            }, function (start, end, label) {
+                console.log(start.toISOString(), end.toISOString(), label);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#date-range-and-time-picker').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                format: 'MM/DD/YYYY h:mm A'
+            }, function (start, end, label) {
+                console.log(start.toISOString(), end.toISOString(), label);
+            });
+        });
+    </script>
+    <!-- End 日历 -->
+    <!-- 编辑器 Summernote-->
+    <!--End 编辑器 -->
+    @Html.Partial("_Modal")
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+﻿@*<select name="acPid" class="selectpicker">*@
+    @if (ViewBag.list != null)
+    {
+        foreach (var list in ViewBag.list)
+        {
+            <option value="@list.acId"> @list.acName</option>
+        }
+    }
+@*</select>*@

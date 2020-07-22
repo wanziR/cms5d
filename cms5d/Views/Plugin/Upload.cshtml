@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "获取短信验证码";
+    Layout = "~/Views/Shared/_LayoutCdn.cshtml";
+}
+
+<script src="~/Scripts/jquery.form.js"></script>
+
+
+@Html.Action("_UploadFileSingle", "Plugin")
+<div id="SingleShow"></div>
+
+@Html.Action("_UploadFileArray", "Plugin")
+<div id="ArrayShow"></div>
+
+
+<button id="btn-upSub" class="btn btn-success">提交</button>
+<script>
+    $("#btn-upSub").click(function () {
+        $("#SingleShow").text($("#imgJsonS").text());
+
+        var s = $("#imgJson").text();
+        s = s.substring(0, s.length - 1); //去掉尾部逗号
+        $("#ArrayShow").text("[" + s + "]");
+    });
+</script>
+

@@ -1,0 +1,291 @@
+﻿
+<div id="inout" >
+@{
+    if (this.User.Identity.IsAuthenticated)
+    {
+        <a href="/UserInfo/UserCenter">
+            <span class="glyphicon glyphicon-user"></span>
+            @this.User.Identity.Name
+            <span style="background-color: brown"
+                  class="badge">2</span>
+        </a>
+        <a href="/userInfo/Exit">
+            <span class="glyphicon glyphicon-log-in"></span>
+            退出
+        </a>
+
+    }
+    else
+    {
+        
+        <a href="" data-toggle="modal" data-target="#register">
+            <span class="glyphicon glyphicon-user"></span>
+            注册 &nbsp;
+        </a>
+        <a href="" data-toggle="modal" data-target="#login">
+            <span class="glyphicon glyphicon-log-in"></span>
+            登录
+        </a>
+
+    }
+}
+</div>
+
+<!----start   模态框 登录注册---->
+<style>
+    .modal {
+        margin-top: 120px;
+    }
+</style>
+<!--登录窗口 -->
+<div id="login" class="modal fade bs-example-modal-sm">
+    <div class="modal-dialog modal-sm" role="document">
+        @*<form id="form_login" action="/UserInfo/UserLogin" method="post">*@
+            <div>
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h2 class="text-center" style="font-size:18px;font-weight:bold">用&nbsp;户&nbsp;登&nbsp;录&nbsp;</h2>
+                        <div class="input-group" style="margin-top:15px">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input class="form-control" name="userName" id="userNameL" type="text" autocomplete="off" placeholder="用户名" />
+                        </div>
+                        <div class="input-group" style="margin-top:15px">
+                            <span class="input-group-addon"><i class="fa fa-lock" style="margin:0;"></i></span>
+                            <input class="form-control" id="userPwdL" name="userPwd" type="password" autocomplete="off" placeholder="请输入密码" />
+                        </div>
+                        <div id="msgLogin" style="color:red"></div>
+                        <br>
+                        <p>
+                            <input type="checkbox" checked />&nbsp;<span style="color:#808080">自动登录</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" data-toggle="modal" data-dismiss="modal" data-target="#fgPwd"><span style="color:#808080">忘记密码</span> </a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" data-toggle="modal" data-dismiss="modal" data-target="#register"><span style="color:#808080">注册</span></a>
+
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="login-submit" class="btn btn-primary" type="submit">登录</button>
+                        <div class="cancel btn btn-danger" data-dismiss="modal">取消</div>
+                    </div>
+                </div>
+            </div>
+            <script>//登录
+                $(function () {
+                    $("#login-submit").click(function () {
+                        var userName = $("#userNameL").val();
+                        var userPwd = $("#userPwdL").val();
+                        if (!$.trim(userName)) {
+                            warning("用户名不能为空！");
+                        }
+                        else if (!$.trim(userPwd)) {
+                            warning("密码不能为空！");
+                        }
+                        else {
+                            $.post("/UserInfo/UserLogin", { userName: userName, userPwd: userPwd },function(data, status) {
+                                if (data == "1") {
+                                    $("#login").modal().hide();
+                                    success("登录成功！");
+                                    setTimeout(function() { window.location.reload(); }, 1000);
+                                } else {
+                                    warning("用户名或密码错误！");
+                                }
+                              
+                            });
+                        }
+                    });
+                });
+            </script>
+        @*</form>*@
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--登录窗口 -->
+<!-- 注册窗口 -->
+<div id="register" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <form id="form_reg" action="/UserInfo/GetReg" method="post">
+            <div style="margin-top: 40px">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h2 class="text-center" style="font-size:18px;font-weight:bold">用&nbsp;户&nbsp;注&nbsp;册</h2>
+                        <div class="modal_content">
+                            <div class="input-group" style="margin-top:15px">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input class="form-control" name="userName" id="userName" type="text" autocomplete="off" placeholder="请输入用户名" />
+                            </div>
+                            <div class="input-group" style="margin-top:15px">
+                                <span class="input-group-addon"> <i class="fa fa-lock" style="margin:0;"></i></span>
+                                <input class="form-control" id="uPwd" name="userPwd" type="password" autocomplete="off" placeholder="请输入密码" />
+                            </div>
+                            <div class="input-group" style="margin-top:15px">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" style="margin:0;"></i></span>
+                                <input class="form-control" id="uPwdC" name="userPwdC" type="password" autocomplete="off" placeholder="请再次输入密码" />
+                            </div>
+                            @Html.Action("_Sms", "Plugin", new { PhoneId = "REG_PhoneId", smsmeg = "用户注册" })
+                            <div class="REG_PhoneId" hidden></div>
+                            <br>
+                            <p>
+                                <a href="" data-toggle="modal" data-dismiss="modal" data-target="#login">已有账号？点我登录</a>
+                            </p>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div id="reg-submit" class="btn btn-primary uReg">注册</div>
+                        <div class="cancel btn btn-danger" data-dismiss="modal">取消</div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+            <script>//注册
+                $(function () {
+                    //用户名存在判断
+                    $("#userName").blur(function() {
+                        //alert("Input失去焦点！");
+                        $.post("/UserInfo/UserNameIn", { userName: $("#userName").val() },function(data, status) {
+                            if (data == "1") {
+                                warning("用户名已存在！");
+                                $("#userName").val("");
+                            }
+                        });
+                    });
+                    //表单提交
+                    $("#reg-submit").click(function () {
+                        $("#uPhone").val($(".REG_PhoneId").val());
+                        var userName = $("#userName").val();
+                        var userPwd = $("#uPwd").val();
+                        var userPwdC = $("#uPwdC").val();
+                        var userPhone = $("#REG_PhoneId").val();
+                        var code = $("#REG_PhoneId_CODE").val();
+                        var codetrue = $(".REG_PhoneId").text();
+                        if (!$.trim(userName)) {
+                            warning("用户名不能为空！");
+                        }
+                        else if (!$.trim(userPwd)) {
+                            warning("密码不能为空！");
+                        }
+                        else if (userPwd != userPwdC) {
+                            warning("两次密码不一致！");
+                        }
+                        else if (!$.trim(userPhone)) {
+                            warning("手机号不能为空！");
+                        }
+                        else if (!$.trim(code)) {
+                            warning("验证码不能为空！");
+                        }
+                        else if (code != codetrue) {
+                            warning("验证码不正确！");
+                        }
+                        else {
+                            $("#register").modal().hide();
+                            success("注册成功,请登录！");
+                            setTimeout(function () { $("#form_reg").submit(); }, 1600);
+                        }
+                    });
+                });
+            </script>
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- 忘记密码窗口 -->
+<div id="fgPwd" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+      @*<form id="FGPwd" id="form_FGPwd" action="/UserInfo/GetEditPwd" method="post">*@
+    <div>
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 class="text-center" style="font-size:18px;font-weight:bold">忘&nbsp;记&nbsp;密&nbsp;码</h2>
+                <div class="modal_content">
+                    <div class="input-group" style="margin-top: 15px">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        <input class="form-control" name="userName" id="userNameF" type="text" autocomplete="off" placeholder="请输入用户名"/>
+                    </div>
+                    @Html.Action("_Sms", "Plugin", new {PhoneId = "FG_PhoneId", smsmeg = "找回密码"})
+                    <div class="FG_PhoneId" hidden></div>
+                    <div class="input-group" style="margin-top: 15px">
+                        <span class="input-group-addon"> <i class="fa fa-lock" style="margin: 0;"></i></span>
+                        <input class="form-control" name="userPwd" id="userPwdF" type="password" autocomplete="off" placeholder="请输入新密码"/>
+                    </div>
+                    <div class="input-group" style="margin-top: 15px">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" style="margin: 0;"></i></span>
+                        <input class="form-control" name="userPwdC" id="userPwdCF" type="password" autocomplete="off" placeholder="请再次输入新密码"/>
+                    </div>
+
+                    <br>
+                    <p>
+                        <a href="" data-toggle="modal" data-dismiss="modal" data-target="#login">已有账号？点我登录</a>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="FGPwd-submit" class="btn btn-primary uReg">确定</div>
+                <div class="cancel btn btn-danger" data-dismiss="modal">取消</div>
+            </div>
+        </div>
+    </div>
+      <!-- /.modal-content -->
+      <script>//忘记（编辑）密码
+          $(function () {
+              //用户名存在判断
+              $("#userNameF").blur(function() {
+                  //alert("Input失去焦点！");
+                  $.post("/UserInfo/UserNameIn", { userName: $("#userNameF").val() },function(data, status) {
+                      if (data == "0") {
+                          warning("用户名输入有误，请重新输入！");
+                          $("#userNameF").val("");
+                      } 
+                  });
+              });
+                  //提交
+              $("#FGPwd-submit").click(function () {
+                  var userName = $("#userNameF").val();
+                      var userPhone = $("#FG_PhoneId").val();
+                      var userPwd = $("#userPwdF").val();
+                      var userPwdC = $("#userPwdCF").val();
+                      var code = $("#FG_PhoneId_CODE").val();
+                      var codetrue = $(".FG_PhoneId").text();
+                      
+                      if (!$.trim(userName)) {
+                          warning("用户名不能为空！");
+                      }
+                       else if (!$.trim(userPhone)) {
+                          warning("手机号不能为空！");
+                     }
+                     else if (!$.trim(code)) {
+                         warning("验证码不能为空！");
+                     }
+                     else if (code != codetrue) {
+                         warning("验证码不正确！");
+                     }
+                      else if (!$.trim(userPwd)) {
+                          warning("密码不能为空！");
+                      }
+                      else if (userPwd != userPwdC) {
+                          warning("两次密码不一致！");
+                      }
+                      else {
+                          $.post("/UserInfo/GetEditPwd", { userName: userName, userPwd: userPwd },function(data, status) {
+                             if (data=="1") {
+                                 success("密码修改成功 请重新登录！");
+                                 setTimeout(function() { window.location.reload(); }, 1000);
+                             } else {
+                                 warning("用户不存在！");
+                             }
+                         });
+                        
+                      }
+                  });
+              });
+          </script>
+    @*</form>*@
+
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!----end   模态框 登录注册---->

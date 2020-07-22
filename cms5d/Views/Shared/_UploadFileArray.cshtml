@@ -1,0 +1,57 @@
+﻿
+<div id="imgList"> </div>
+<div id="imgJson" hidden></div>
+
+<div style=" width: 100px;height: 100px;float: left">
+    <form id="uploadForm">
+        <input type="file" name="upFile" id='upFile' accept=".jpg, .jpeg, .png" onchange="$('#upBtn').val($('#upFile').val());" style="display: none">
+        <div id="upBtn" onclick="$('#upFile').click()" style="width: 100px; height: 100px; text-align: center; background-color: #f9f9f9; line-height: 100px; margin: 5px">
+            <span style="color: #a8a8a8;font-weight: bold">+</span>
+        </div>
+        <input id="btn-sub" type="button" value="提交" hidden />
+    </form>
+</div>
+
+<script type="text/javascript">
+    $("#upFile").on("change", function() {
+        $("#btn-sub").click(sub());
+    });
+    function sub()
+    {
+        $("#uploadForm").ajaxSubmit({
+            url: "@Url.Action("GetUpload", "Plugin")",
+            type: "post",
+            success: function (data) {
+                console.log(data);
+                var arr = data.split('.');
+                var strId = arr[0];
+                console.log(strId);
+                //alert(strId);
+                var strImg = "";
+                strImg += '<div style=" width: 100px;height: 100px;position: relative;float: left">';
+                strImg += '<img style="width: 90px;height: 90px;margin: 5px;" src ="/upload/' + data + '"/>';
+                strImg += '<a style="color: red;position: absolute;bottom: 5px;right: 5px;font-weight: bold;" class="del" href="#" data-id="'+ strId +'">删除</a>';
+                strImg += '</div>';
+                $("#imgList").append(strImg);
+                var strImgJson = ' <span id="' + strId + '">{"imgUrl":"/' + data + '"},</span>';
+                $("#imgJson").append(strImgJson);
+
+
+                $(".del").on("click", function () {
+                    //alert($(this).data("id"));
+                    //删除功能实现
+                    //if (!confirm("确认删除吗？")) return;
+                    var spid = $(this).data("id");
+                    $("span[id='" + spid + "']").remove();
+                    $(this).parent("div").remove();
+                });
+            },
+
+            error: function (aa) {
+                alert("上传失败！");
+            }
+        });
+    }
+
+</script>
+

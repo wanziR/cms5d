@@ -1,0 +1,229 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+
+@{
+    ViewBag.Title = ViewBag.acName;
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<div class="content">
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <div class="row">
+            <div class="col-lg-3">
+                <h1 class="title">@ViewBag.acName </h1>
+            </div>
+            <div class="col-lg-6" style="text-align: left">
+                <select id="acName" class="selectpicker">
+                    <option value="">=====@ViewBag.acPName=====</option>
+                    @Html.Action("_ArtCList", "Article", new {acPName = ViewBag.acPName})
+                </select>
+                <script>
+                    //select默认选中
+                   // $("select").val(@ViewBag.acId);
+                    $("#acName").change(function () {
+                        var $acId = $(this).val();
+                        window.location.href = "/Admin/ArticleList/?acId=" + $acId;
+                    });
+                </script>
+            </div>
+            <div class="col-lg-3" style="text-align: right">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a data-toggle="modal" data-target="#adAdd" href="#" class="btn btn-light"><i class="fa fa-plus" aria-hidden="true">&nbsp;添加</i></a>
+                    @*<a href="javascript:history.back()" class="btn btn-light"><i class="fa fa-reply" aria-hidden="true"></i></a>*@
+                    <a href="javascript:location.reload()" class="btn btn-light"><i class="fa fa-refresh"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <div class="container-widget">
+
+        <!-- Start Row -->
+        <div class="row">
+
+            <!-- Start Panel -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+
+                    <div class="panel-body table-responsive">
+
+                        <table id="example0" class="table display table-hover">
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>栏目</th>
+                                    <th>编辑</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (ViewBag.list != null)
+                                {
+                                    foreach (var list in ViewBag.list)
+                                    {
+                                        <tr id="@list.artId">
+                                            <td> @list.artName</td>
+                                            <td> @list.acName</td>
+                                            <td>
+                                                <a class="btnEdit" href="#" data-id="@list.artId" data-name="@list.artName" data-acid=" @list.acId">编辑</a>
+                                                &nbsp;&nbsp;<a href="#" name="@list.artId" class="del"><span style="color:red">删除</span></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-center">
+                    @Html.PagedListPager((IPagedList)Model, page => Url.Action("ArticleList", new { page , acid =ViewBag.acId}))
+                </div>
+            </div>
+            <!-- End Panel -->
+
+
+        </div>
+        <!-- End Row -->
+
+    </div>
+    <!-- END 内容部分  -->
+
+</div>
+
+
+<script>
+    //删除
+    $(".del").click(function () {
+        if (!confirm("确认删除吗？")) return;
+        var ID = $(this).attr("name");
+        $.post("/Article/Del/", { id: ID }, function (data, status) {
+            $("#" + ID).remove();
+            //$(success("删除成功！"));
+        });
+    });
+
+    //编辑传值
+    $(".btnEdit").click(function () {
+        $("#artId").val($(this).data('id'));
+        $("#artName").val($(this).data('name'));
+        $("#acId").val($(this).data('acid'));
+        $("#edEdit").modal({ show: true });
+    });
+    //编辑提交
+    $(function () {
+        $("#btn-edit-submit").click(function () {
+
+            $("#edEdit").modal().hide();
+            success("编辑成功！");
+            setTimeout(function () { $("#form_edit").submit(); }, 1600);
+
+        });
+    });
+
+    //添加提交
+    $(function () {
+        $("#btn-add-submit").click(function () {
+            var adminName = $("#aName").val();
+            var adminPwd = $("#aPwd").val();
+            var adminPwdC = $("#aPwdC").val();
+            if (!$.trim(adminName)) {
+                warning("昵称不能为空！");
+            }
+            else if (!$.trim(adminPwd)) {
+                warning("密码不能为空！");
+            }
+            else if (adminPwd != adminPwdC) {
+                warning("两次密码不一致！");
+
+            } else {
+                success("添加成功！");
+                setTimeout(function () { $("#form_Add").submit(); }, 1600);
+            }
+        });
+    });
+</script>
+<!--start Modal 编辑-->
+@*<a href="#" data-toggle="modal" data-target="#edEdit" data-id="1" data-name="name1">编辑</a>*@
+<div class="modal fade" id="edEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel" style="color: #0072bc">  <i class="fa fa-pencil-square-o"></i>&nbsp;编辑内容</h4>
+            </div>
+            <div class="modal-body" style="text-align: left;">
+
+                <form id="form_edit" action="/Article/GetEdit?acId=@ViewBag.acId" class="form-horizontal" method="post">
+                    <input type="text" name="artId" id="artId" class="form-control" style="display: none">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">标题</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="artName" id="artName" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">栏目</label>
+                        <div class="col-sm-10">
+                            <select id="acId" name="acId" class="selectpicker">
+                                @Html.Action("_ArtCList", "Article", new {acPName = ViewBag.acPName})
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="btn btn-default" id="btn-edit-submit">提交</div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--end Modal 编辑 -->
+<!--start Modal 添加-->
+<div class="modal fade" id="adAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" style="color: #0072bc">  <i class="fa fa-pencil-square-o"></i>&nbsp;添加内容</h4>
+            </div>
+            <div class="modal-body" style="text-align: left;">
+                <form id="form_Add" action="/Article/GetAdd" class="form-horizontal" method="post">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">昵称</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="adminName" id="aName" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" name="adminPwd" id="aPwd" class="form-control">
+                        </div>
+                    </div>
+                    <span id="cpwd"></span>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">确认密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" id="aPwdC" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="btn btn-default" id="btn-add-submit">提交</div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--end Modal 添加 -->

@@ -1,0 +1,20 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_LayoutCdn.cshtml";
+}
+<i class="fa fa-address-book" aria-hidden="true"></i>
+@if (ViewBag.list != null)
+{
+    foreach (var list in ViewBag.list)
+    {
+        @list.adminName   
+    }
+}
+
+<div class="text-center">
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("List", new { page }))
+</div>
+
